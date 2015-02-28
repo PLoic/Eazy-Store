@@ -1,0 +1,28 @@
+{% extends "layout/default" %}
+{% block content %}
+
+<div class="container" id="content">
+    <div class="col-lg-offset-3 col-lg-5 col-sm-offset-2 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Connexion</h3>
+            </div>
+            <div class="panel-body">
+                <form role="form" action="/user/auth" method="post">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" name="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+                    <button type="submit" class="btn btn-default">Connexion</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
