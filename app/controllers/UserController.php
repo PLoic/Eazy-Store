@@ -45,7 +45,7 @@ class UserController extends Controller
 
         try {
             $this->userModel->insertUser($user);
-            mkdir(DatabaseProvider::connection()->lastInsertId());
+            mkdir('files/'.DatabaseProvider::connection()->lastInsertId());
         } catch (\PDOException $e) {
             $match = [];
             if (preg_match('/SQLSTATE\[23000]: Integrity constraint violation: 1062 Duplicate entry \'(?P<value>.*)\' for key \'(?P<field>.*)_UNIQUE\'/', $e->getMessage(), $match)) {
@@ -71,6 +71,9 @@ class UserController extends Controller
     public function auth()
     {
         try {
+
+            $_fileTypes = require_once('app/config/filesTypes.php');
+
             $username = Input::post('username');
             $password = Input::post('password');
 
@@ -78,7 +81,22 @@ class UserController extends Controller
             if (!empty($validAuth)) {
 
                 Authentication::getInstance()->setAuthenticated($username, $validAuth['id']);
-                $this->getView()->redirect('/');
+                $tabtmp = scandir('files/'.($validAuth['id']-1));
+                $tab = array();
+                foreach($tabtmp as $key=>$value){
+                    $file_info = explode('.',$value);
+                    if(sizeof($file_info)>1 && $file_info[0] != '')
+                    {
+                        $tab[$value] =  $_fileTypes[$file_info[sizeof($file_info)-1]];
+
+                    }elseif(is_dir('files/'.($validAuth['id']-1).'/'.$file_info[0])) {
+
+                        $tab[$value] = "fa fa-folder fa-fw";
+
+                    }
+                }
+
+                $this->getView()->render('file/index', ['file'=>$tab]);
             } else {
                 // TODO POPUP WRONG CREDENTIALS MESSAGE
 

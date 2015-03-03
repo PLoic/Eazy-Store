@@ -1,4 +1,32 @@
 {% extends "layout/default" %}
 {% block content %}
+<script type="text/javascript">
+    jQuery(function($){
+        $('#drag').dropfile();
+    });
+</script>
+<div class="container" id="content">
+    <div class="panel panel-default">
+        <div class="panel-body" id="filesM">
+            Vos fichier :
+        </div>
+    </div>
+    <ul class="list-group col-lg-8">
+    {% for key,value in file %}
+        {% if key starts with '.' %}
+        {% else %}
+             <li class="list-group-item">
+                    <i class="fa {{ value }} fa-fw"></i>{{ key }}
+             </li>
 
+        {% endif %}
+    {% endfor %}
+    </ul>
+    <div class="panel panel-default col-lg-4" id="drag">
+        <div class="panel-body">
+            Panel content
+        </div>
+    </div>
+
+</div>
 {% endblock %}
