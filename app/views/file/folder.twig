@@ -1,0 +1,50 @@
+{% extends "layout/default" %}
+{% block content %}
+    <script type="text/javascript">
+        jQuery(function($){
+            $('#drag').dropfile();
+        });
+    </script>
+    <div class="container" id="content">
+        <div class="panel panel-default">
+            <div class="panel-body" id="filesM">
+                Vos fichier :
+                <button type="button" class="btn btn-default col-lg-offset-9" id="newDir">Nouveau dossier</button>
+
+                <div id="dirForm" >
+                    <form role="form" action="/file/create/{{ id }}" method="post" class="col-lg-offset-4 col-lg-4" id="dirCr">
+                        <div class="form-group">
+                            <label for="name">Nom du dossier:</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                        </div>
+                        <button type="submit" class="btn btn-default">Soumettre</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <ul class="list-group col-lg-8">
+            {% for key,value in file %}
+                {% if key starts with '.' %}
+                {% else %}
+                    <li class="list-group-item">
+                        <i class="fa {{ value }} fa-fw"></i>{{ key }}
+                        {% if value matches '/folder/' %}
+                            <a class="" href="/folder/{{ id }}/{{ key }}"><i class="fa fa-arrow-right pull-right"></i></a>
+                        {% else %}
+                            <a href="/files/{{ id }}/{{ key }}" download><i class="fa fa-download pull-right"></i></a>
+                        {% endif %}
+                        <a href="/delete/file/{{ id }}/{{ key }}" id="file"><i class="fa fa-times pull-right"></i></a>
+
+                    </li>
+
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <div class="panel panel-default col-lg-4" id="drag">
+            <div class="panel-body">
+                Panel content
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

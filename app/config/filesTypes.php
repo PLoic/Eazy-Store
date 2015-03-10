@@ -50,9 +50,9 @@ return array(
     'doc'   => 'fa-file-text',
     'docx'  => 'fa-file-text',
     'odt'   => 'fa-file-text',
-    'pdf'   => 'fa-file-text',
-    'xls'   => 'fa-file-text',
-    'xlsx'  => 'fa-file-text',
+    'pdf'   => 'fa-file-pdf-o',
+    'xls'   => 'fa-file-excel-o',
+    'xlsx'  => 'fa-file-excel-o',
 
     // Executables
     'app'   => 'fa-list-alt',

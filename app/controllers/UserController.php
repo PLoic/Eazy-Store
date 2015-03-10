@@ -18,6 +18,11 @@ use SFramework\Database\DatabaseProvider;
 
 class UserController extends Controller
 {
+
+    private  $_fileTypes ;
+
+    private  $validAuth;
+
     /**
      * @var UserModel the user model duh
      */
@@ -27,6 +32,11 @@ class UserController extends Controller
     {
         $this->userModel = $this->loadModel('User');
         parent::__construct();
+    }
+
+    public function index()
+    {
+        $this->file_list();
     }
 
     public function register()
@@ -45,7 +55,7 @@ class UserController extends Controller
 
         try {
             $this->userModel->insertUser($user);
-            mkdir('files/'.DatabaseProvider::connection()->lastInsertId());
+        mkdir('files/'.(DatabaseProvider::connection()->lastInsertId()+1));
         } catch (\PDOException $e) {
             $match = [];
             if (preg_match('/SQLSTATE\[23000]: Integrity constraint violation: 1062 Duplicate entry \'(?P<value>.*)\' for key \'(?P<field>.*)_UNIQUE\'/', $e->getMessage(), $match)) {
@@ -63,48 +73,28 @@ class UserController extends Controller
         if (!empty($errors)){
             $this->getView()->render('user/register', ['user' => $user, 'errors' => $errors]);
         }
-        else {
-            $this->getView()->redirect('/');
-        }
     }
 
     public function auth()
     {
         try {
 
-            $_fileTypes = require_once('app/config/filesTypes.php');
-
             $username = Input::post('username');
             $password = Input::post('password');
 
-            $validAuth = $this->userModel->validateAuthentication($username, $password);
-            if (!empty($validAuth)) {
+            $this->validAuth = $this->userModel->validateAuthentication($username, $password);
 
-                Authentication::getInstance()->setAuthenticated($username, $validAuth['id']);
-                $tabtmp = scandir('files/'.($validAuth['id']-1));
-                $tab = array();
-                foreach($tabtmp as $key=>$value){
-                    $file_info = explode('.',$value);
-                    if(sizeof($file_info)>1 && $file_info[0] != '')
-                    {
-                        $tab[$value] =  $_fileTypes[$file_info[sizeof($file_info)-1]];
-
-                    }elseif(is_dir('files/'.($validAuth['id']-1).'/'.$file_info[0])) {
-
-                        $tab[$value] = "fa fa-folder fa-fw";
-
-                    }
-                }
-
-                $this->getView()->render('file/index', ['file'=>$tab]);
+            if (!empty($this->validAuth)) {
+                Authentication::getInstance()->setAuthenticated($username, $this->validAuth['id']);
+                $this->getView()->render('layout/default',$this->validAuth);
             } else {
                 // TODO POPUP WRONG CREDENTIALS MESSAGE
-
-                $this->getView()->redirect('/');
+                print_r($this->validAuth);
+                //$this->getView()->redirect('/');
             }
         } catch (InputNotSetException $e) {
             //throw $e;
-            $this->getView()->redirect('/');
+            //$this->getView()->redirect('/');
         }
     }
 
@@ -117,6 +107,28 @@ class UserController extends Controller
     public function disconnect(){
             Authentication::getInstance()->disconnect();
             $this->getView()->redirect('/');
+    }
+
+    public function file_list(){
+        //echo '********************************************';
+        $id = ((int)$this->getParams()[0]);
+        $this->_fileTypes = require_once('app/config/filesTypes.php');
+        $tabtmp = scandir('files/'.($id-1));
+        $tab = array();
+        foreach($tabtmp as $key=>$value){
+            $file_info = explode('.',$value);
+            if(sizeof($file_info)>1 && $file_info[0] != '')
+            {
+                $tab[$value] =  $this->_fileTypes[$file_info[sizeof($file_info)-1]];
+
+            }elseif(is_dir('files/'.($id-1).'/'.$file_info[0])) {
+
+                $tab[$value] = "fa fa-folder fa-fw";
+
+            }
+        }
+
+        $this->getView()->render('file/index', ['file'=>$tab, 'id' => $id]);
     }
 
 }

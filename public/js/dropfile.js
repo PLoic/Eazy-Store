@@ -38,16 +38,25 @@
             })
 
             function upload(files,area,index){
+
+                var hashes = window.location.href.slice(window.location.href.indexOf('/') + 1).split('/');
+                var id = hashes[(hashes.length)-1];
+                console.log(id);
+
                 var file = files[index];
 
                 var formData = new FormData();
 
                 formData.append("fic",file);
 
+
                 $.ajax({
                     type: 'POST',
-                    url: 'upload.php',
+                    url: '/upload/osef/'+id,
                     data: formData,
+                    success: function(){
+                        location.reload();
+                    },
                     processData:false,
                     contentType:false
                 });
