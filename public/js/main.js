@@ -30,14 +30,25 @@ function OnReady(){
     })
 
     $('#dirCr').submit(function(data){
-        var donnees = $(this).serialize();
+        var name = $('#name').val();
+
+        var path = $(location).attr('pathname')
+        path = path.slice(path.indexOf('/') + 1).split('/');
+        console.log(path);
+        path.shift();
+        path.shift();
+        console.log(path);
+        var opt = path.join('/');
+        console.log(opt);
 
         $.ajax({
             type: $(this).attr("method"),
             url: $(this).attr("action"),
 
-            data: donnees
-        });
+            data: {
+                path: opt, name: name
+            }
+            });
         return false;
     })
 
@@ -61,6 +72,47 @@ function OnReady(){
         return false;
 
     });
+
+    $('#folder').click(function(){
+        var data = $(this).attr("href");
+        console.log(data);
+        $.ajax({
+            type: 'POST',
+            url: data,
+            data: { path: data},
+            success : function(data2){
+                window.location.replace(data);
+            }
+        });
+        return false;
+    })
+
+    $('#return').click(function(){
+        var data = $(location).attr('pathname');
+        var hashes = data.slice(data.indexOf('/') + 1).split('/');
+
+       var options = hashes.slice(3,hashes.length);
+
+        if(options.length == 1){
+            hashes[1] = 'files'
+            delete hashes[hashes.length-1];
+            var url = hashes.join('/');
+            url = '/'+url;
+            console.log(url);
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success : function(data){
+                    window.location.replace(url);
+                }
+            });
+            return false;
+        }else{
+        }
+
+
+
+    })
 
 
 }

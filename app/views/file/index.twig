@@ -29,7 +29,7 @@
              <li class="list-group-item">
                  <i class="fa {{ value }} fa-fw"></i>{{ key }}
                 {% if value matches '/folder/' %}
-                    <a class="" href="/folder/{{ id }}/{{ key }}"><i class="fa fa-arrow-right pull-right"></i></a>
+                    <a class="" id="folder" href="/user/folder/{{ id }}/{{ key }}"><i class="fa fa-arrow-right pull-right"></i></a>
                 {% else %}
                     <a href="/files/{{ id }}/{{ key }}" download><i class="fa fa-download pull-right"></i></a>
                 {% endif %}

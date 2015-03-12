@@ -8,13 +8,14 @@
     <div class="container" id="content">
         <div class="panel panel-default">
             <div class="panel-body" id="filesM">
-                Vos fichier :
+                Actuellement: <a id="return"><i class="fa fa-angle-double-left fa-2x"></i></a> {{ folder }}  </br>
+                Vos fichier  :
                 <button type="button" class="btn btn-default col-lg-offset-9" id="newDir">Nouveau dossier</button>
 
                 <div id="dirForm" >
-                    <form role="form" action="/file/create/{{ id }}" method="post" class="col-lg-offset-4 col-lg-4" id="dirCr">
+                    <form role="form" action="/file/create/" method="post" class="col-lg-offset-4 col-lg-4" id="dirCr">
                         <div class="form-group">
-                            <label for="name">Nom du dossier:</label>
+                            <label for="name">Nom du dossier :</label>
                             <input type="text" class="form-control" id="name" name="name">
                         </div>
                         <button type="submit" class="btn btn-default">Soumettre</button>

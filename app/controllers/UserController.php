@@ -28,6 +28,8 @@ class UserController extends Controller
      */
     private $userModel;
 
+    private $path;
+
     public function __construct()
     {
         $this->userModel = $this->loadModel('User');
@@ -86,7 +88,8 @@ class UserController extends Controller
 
             if (!empty($this->validAuth)) {
                 Authentication::getInstance()->setAuthenticated($username, $this->validAuth['id']);
-                $this->getView()->render('layout/default',$this->validAuth);
+                print_r($this->validAuth);
+                $this->getView()->render('layout/default',['id'=>($this->validAuth['id']-1)]);
             } else {
                 // TODO POPUP WRONG CREDENTIALS MESSAGE
                 print_r($this->validAuth);
@@ -109,11 +112,22 @@ class UserController extends Controller
             $this->getView()->redirect('/');
     }
 
-    public function file_list(){
-        //echo '********************************************';
-        $id = ((int)$this->getParams()[0]);
+    public function file_list($path3 = ''){
+        $path = $this->getParams();
+
+        if(sizeof($path) == 1){
+            $test = false;
+            $id = (int)$path[0];
+            $tabtmp = scandir('files/'.$id);
+        }
+        else{
+            $test = true;
+            $id = (int)$path[0];
+            $path2 = implode('/',$path);
+            $tabtmp = scandir('files/'.$path2);
+        }
         $this->_fileTypes = require_once('app/config/filesTypes.php');
-        $tabtmp = scandir('files/'.($id-1));
+
         $tab = array();
         foreach($tabtmp as $key=>$value){
             $file_info = explode('.',$value);
@@ -121,14 +135,25 @@ class UserController extends Controller
             {
                 $tab[$value] =  $this->_fileTypes[$file_info[sizeof($file_info)-1]];
 
-            }elseif(is_dir('files/'.($id-1).'/'.$file_info[0])) {
+            }elseif(is_dir('files/'.($path3 == '')? $id : $path3 .'/'.$file_info[0])) {
 
                 $tab[$value] = "fa fa-folder fa-fw";
 
             }
         }
 
-        $this->getView()->render('file/index', ['file'=>$tab, 'id' => $id]);
+        if(!$test)
+            $this->getView()->render('file/index', ['file'=>$tab, 'id' => $id]);
+        else
+            $this->getView()->render('file/folder', ['file'=>$tab, 'id' => $id, 'folder' => $path[sizeof($path)-1]]);
+    }
+
+    public function folder(){
+        $this->path = Input::post('path');
+    }
+
+    public function folder2(){
+        $this->file_list($this->path);
     }
 
 }

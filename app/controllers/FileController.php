@@ -27,13 +27,16 @@ class FileController extends Controller {
     public function upload(){
         $fic=$_FILES['fic'];
 
-        move_uploaded_file($fic['tmp_name'],'files/'.($this->getParams()[0]-1).'/'.$fic['name']);
+        move_uploaded_file($fic['tmp_name'],'files/'.($this->getParams()[0]).'/'.$fic['name']);
 
         print_r($this->getParams());
     }
 
     public function create_dir(){
-        mkdir('files/'.$this->getParams()[0].'/'.Input::post('name'));
+        var_dump(Input::post('path'));
+        var_dump(Input::post('name'));
+        //htmlentities(Input::post('name'));
+        mkdir('files/'.Input::post('path').'/'.Input::post('name'));
     }
 
     public function delete(){

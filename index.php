@@ -48,7 +48,8 @@ function main()
     $router->add('/upload', new \app\controllers\FileController(), 'upload','POST');
     $router->add('/file/create', new \app\controllers\FileController(), 'create_dir','POST');
     $router->add('/delete/file', new \app\controllers\FileController(), 'delete');
-
+    $router->add('/user/folder/', new \app\controllers\UserController(), 'folder' , 'POST');
+    $router->add('/user/folder/', new \app\controllers\UserController(), 'folder2' );
 
     $router->matchCurrentRequest();
 }
