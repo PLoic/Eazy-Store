@@ -15,10 +15,6 @@ function OnReady(){
     var tmp = $('#file_li').height();
     $('#drag').height(tmp).empty();
 
-    $('#dirForm').hide();
-    $('#newDir').click(function(){
-            $('#dirForm').slideToggle('slow');
-    })
 
     $('#signup').submit(function(data){
         var donnees = $(this).serialize();
@@ -49,17 +45,70 @@ function OnReady(){
          * Création de la liste de fichier
          */
         $('#content').empty();
-        var a =  $('<ul />').attr('id','my_list')
-            .attr('class','list-group col-lg-8');
-        var b = $('#content');
-        a.appendTo(b);
+        var a = $('#content');
+
+        var f = $('<div />')
+                        .attr('class','panel panel-default')
+                        .append(
+                                $('<div />')
+                                    .attr('class','panel-body')
+                                    .attr('id','filesM')
+                                    .text('Vos fichier :')
+                                    .append(
+                                                $('<button />')
+                                                        .attr('type','button')
+                                                        .attr('class','btn btn-default pull-right')
+                                                        .attr('id','newDir')
+                                                        .text('Nouveau dossier')
+                                                        .click(function(){
+                                                            $('#dirForm').slideToggle('slow');
+                                                        }),
+                                                $('<div />')
+                                                    .attr('id','dirForm')
+                                                    .append(
+                                                                $('<form />')
+                                                                    .attr('role',"form")
+                                                                    .attr('method',"post")
+                                                                    .attr('action','/')
+                                                                    .attr('class','col-lg-offset-4 col-lg-4')
+                                                                    .attr('id','dirCr')
+                                                                    .append(
+                                                                            $('<div />')
+                                                                                .attr('class','form-group')
+                                                                                .append(
+                                                                                $('<label />').attr('role','name').text('Nom du dossier:'),
+                                                                                $('<input />')
+                                                                                    .attr('id','name')
+                                                                                    .attr('name','name')
+                                                                                    .attr('class','form-control')
+                                                                                    .attr('type','text')
+
+                                                                                ),
+                                                                            $('<button />')
+                                                                                .attr('type','submit')
+                                                                                .attr('class','btn btn-default')
+                                                                                .text('Soumettre')
+                                                                    )
+                                                        )
+                                                    .hide()
+
+                                            )
+                        )
+
+
+        f.appendTo(a);
+        var b =  $('<ul />')
+                        .attr('id','my_list')
+                        .attr('class','list-group col-lg-8');
+
+        b.appendTo(a);
         $.each(data,function(key,value) {
             if (!(key.toString().indexOf('.') == 0)) {
                 var c = $('<li />').attr('class', 'list-group-item')
                 var d = $('<i />').attr('class', 'fa ' + value + '  fa-fw');
                 d.appendTo(c);
                 c.append(key);
-                c.appendTo(a);
+                c.appendTo(b);
 
                 var f = $('<a />').attr('href', '/delete/' + url);
                 if (value.toString().indexOf('folder') != -1) {
