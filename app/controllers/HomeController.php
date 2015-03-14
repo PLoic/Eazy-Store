@@ -9,6 +9,7 @@
 namespace app\controllers;
 
 use SFramework\mvc\Controller;
+use SFramework\Helpers\Authentication;
 
 class HomeController extends Controller
 {
@@ -20,6 +21,9 @@ class HomeController extends Controller
 
     public function index()
     {
-        $this->getView()->render('home/index');
+        if(Authentication::getInstance()->isAuthenticated())
+            $this->getView()->render('home/index', ['id'=>Authentication::getInstance()->getUserId()-1]);
+        else
+            $this->getView()->render('home/index');
     }
 }

@@ -39,8 +39,9 @@
 
             function upload(files,area,index){
 
-                var hashes = window.location.href.slice(window.location.href.indexOf('/') + 1).split('/');
-                var id = hashes[(hashes.length)-1];
+                var hashes = window.location.pathname.slice(window.location.href.indexOf('/') + 1).split('/');
+                hashes.shift();
+                var id = hashes.join('/');
                 console.log(id);
 
                 var file = files[index];
@@ -54,7 +55,7 @@
                     type: 'POST',
                     url: '/upload/osef/'+id,
                     data: formData,
-                    success: function(){
+                     success: function(){
                         location.reload();
                     },
                     processData:false,

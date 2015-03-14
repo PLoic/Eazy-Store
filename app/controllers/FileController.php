@@ -26,10 +26,10 @@ class FileController extends Controller {
 
     public function upload(){
         $fic=$_FILES['fic'];
+        $path = implode('/',$this->getParams());
+        move_uploaded_file($fic['tmp_name'],'files/'.$path.'/'.$fic['name']);
 
-        move_uploaded_file($fic['tmp_name'],'files/'.($this->getParams()[0]).'/'.$fic['name']);
-
-        print_r($this->getParams());
+        //print_r($path);
     }
 
     public function create_dir(){

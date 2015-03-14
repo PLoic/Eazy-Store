@@ -7,12 +7,17 @@ function OnReady(){
     $('#content').hide()
         .fadeIn('slow');
 
-    var tmp = $('body').height();
+
+    $('#acceuil').click(function(){
+        window.location.replace('/');
+    })
+
+    var tmp = $('#file_li').height();
     $('#drag').height(tmp).empty();
 
     $('#dirForm').hide();
-    $('#newDir').bind("click",function(){
-        $('#dirForm').fadeIn('slow');
+    $('#newDir').click(function(){
+            $('#dirForm').slideToggle('slow');
     })
 
     $('#signup').submit(function(data){
@@ -28,6 +33,75 @@ function OnReady(){
         });
         return false;
     })
+
+    function listing(data){
+        /**
+         * Traitement de l'URL
+         * @type {*|jQuery}
+         */
+        var url = $(location).attr('pathname');
+        url = url.slice(url.indexOf('/') + 1).split('/');
+        url.shift();
+        url.shift();
+        url = url.join('/');
+
+        /**
+         * Création de la liste de fichier
+         */
+        $('#content').empty();
+        var a =  $('<ul />').attr('id','my_list')
+            .attr('class','list-group col-lg-8');
+        var b = $('#content');
+        a.appendTo(b);
+        $.each(data,function(key,value) {
+            if (!(key.toString().indexOf('.') == 0)) {
+                var c = $('<li />').attr('class', 'list-group-item')
+                var d = $('<i />').attr('class', 'fa ' + value + '  fa-fw');
+                d.appendTo(c);
+                c.append(key);
+                c.appendTo(a);
+
+                var f = $('<a />').attr('href', '/delete/' + url);
+                if (value.toString().indexOf('folder') != -1) {
+                    var e = $('<a />')
+                        .attr('href', '/user/folder/' + url +'/'+key)
+                        .attr('id', 'folder')
+                        .append(
+                        $('<i />')
+                            .attr('class', 'fa fa-arrow-right pull-right')
+                    );
+                    e.appendTo(c);
+                } else {
+                    var e = $('<a />')
+                        .attr('href', url + '/' + key)
+                        .attr('download', key)
+                        .append(
+                        $('<i />')
+                            .attr('class', 'fa fa-download pull-right')
+                    );
+                    e.appendTo(c);
+                }
+
+            }
+        })
+    }
+
+    /**
+     * Appel AJAX lors de l'affichage des fichier perso
+     */
+    $('#my_files').click(function(){
+        var id = $(this).attr('href');
+
+        $.ajax({
+            type: 'GET',
+            url: '/user/files/'+id,
+            success: function(data){
+               window.history.pushState('','','/user/files/'+id);
+               listing(data);
+            }
+        })
+        return false;
+    });
 
     $('#dirCr').submit(function(data){
         var name = $('#name').val();
@@ -47,8 +121,12 @@ function OnReady(){
 
             data: {
                 path: opt, name: name
+            },
+
+            success:function(){
+                location.reload();
             }
-            });
+        });
         return false;
     })
 
@@ -66,7 +144,6 @@ function OnReady(){
         $.ajax({
             type: 'GET',
             url: addressValue,
-
             data: a
         });
         return false;
@@ -77,11 +154,13 @@ function OnReady(){
         var data = $(this).attr("href");
         console.log(data);
         $.ajax({
-            type: 'POST',
+            type: 'GET',
             url: data,
             data: { path: data},
             success : function(data2){
-                window.location.replace(data);
+                window.history.pushState('','',data);
+                $('body').empty()
+                            .html(data2);
             }
         });
         return false;

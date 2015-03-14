@@ -38,6 +38,7 @@ class UserController extends Controller
 
     public function index()
     {
+
         $this->file_list();
     }
 
@@ -87,9 +88,8 @@ class UserController extends Controller
             $this->validAuth = $this->userModel->validateAuthentication($username, $password);
 
             if (!empty($this->validAuth)) {
-                Authentication::getInstance()->setAuthenticated($username, $this->validAuth['id']);
-                print_r($this->validAuth);
-                $this->getView()->render('layout/default',['id'=>($this->validAuth['id']-1)]);
+                Authentication::getInstance()->setAuthenticated($username, $this->validAuth['id']);;
+                $this->getView()->render('layout/default',['id'=>Authentication::getInstance()->getUserId()-1]);
             } else {
                 // TODO POPUP WRONG CREDENTIALS MESSAGE
                 print_r($this->validAuth);
@@ -142,10 +142,14 @@ class UserController extends Controller
             }
         }
 
-        if(!$test)
-            $this->getView()->render('file/index', ['file'=>$tab, 'id' => $id]);
-        else
-            $this->getView()->render('file/folder', ['file'=>$tab, 'id' => $id, 'folder' => $path[sizeof($path)-1]]);
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json');
+        echo json_encode($tab);
+        //if(!$test)
+        //    $this->getView()->render('file/index', ['file'=>$tab, 'id' => $id]);
+        //else
+        //    $this->getView()->render('file/folder', ['file'=>$tab, 'id' => $id, 'folder' => $path[sizeof($path)-1]]);
     }
 
     public function folder(){
