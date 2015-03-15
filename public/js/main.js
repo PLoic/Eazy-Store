@@ -16,13 +16,13 @@ function OnReady(){
     //$('#drag').height(tmp).empty();
 
 
-    $('#signup').submit(function(data){
+    $('#signup').submit(function(data) {
         var donnees = $(this).serialize();
 
         $.ajax({
             type: $(this).attr("method"),
             url: $(this).attr("action"),
-            success : function(data){
+            success: function(data) {
                 window.location.replace('/');
             },
             data: donnees
@@ -95,6 +95,7 @@ function OnReady(){
                     .height(size).empty();
     }
 
+
     function listing(data){
         /**
          * Traitement de l'URL
@@ -137,6 +138,20 @@ function OnReady(){
                     var e = $('<a />')
                         .attr('href', '/user/folder/' + url +'/'+key)
                         .attr('id', 'folder')
+                        .click(function(){
+                            var data = $(this).attr("href");
+                            console.log(data);
+                            $.ajax({
+                                type: 'GET',
+                                url: data,
+                                data: { path: data},
+                                success : function(data2){
+                                    window.history.pushState('','',data);
+                                    listing(data2);
+                                }
+                            });
+                            return false;
+                        })
                         .append(
                         $('<i />')
                             .attr('class', 'fa fa-arrow-right pull-right')
@@ -180,7 +195,7 @@ function OnReady(){
         return false;
     });
 
-    $('#dirCr').submit(function(data){
+    $('#dirCr').submit(function(data) {
         var name = $('#name').val();
 
         var path = $(location).attr('pathname')
@@ -195,29 +210,27 @@ function OnReady(){
         $.ajax({
             type: $(this).attr("method"),
             url: $(this).attr("action"),
-
             data: {
-                path: opt, name: name
+                path: opt,
+                name: name
             },
-
-            success:function(){
+            success: function() {
                 location.reload();
             }
         });
         return false;
     })
 
-    $('#file').click(function () {
+    $('#file').click(function() {
         var addressValue = $(this).attr("href");
         var hashes = addressValue.slice(addressValue.indexOf('/') + 1).split('/');
         console.log(hashes);
-        var id = hashes[hashes.length-2];
-        var files =  hashes[hashes.length-1];
+        var id = hashes[hashes.length - 2];
+        var files = hashes[hashes.length - 1];
         var a = {
             id: id,
             file: files
         }
-
         $.ajax({
             type: 'GET',
             url: addressValue,
@@ -227,21 +240,6 @@ function OnReady(){
 
     });
 
-    $('#folder').click(function(){
-        var data = $(this).attr("href");
-        console.log(data);
-        $.ajax({
-            type: 'GET',
-            url: data,
-            data: { path: data},
-            success : function(data2){
-                window.history.pushState('','',data);
-                $('body').empty()
-                            .html(data2);
-            }
-        });
-        return false;
-    })
 
     $('#return').click(function(){
         var data = $(location).attr('pathname');
