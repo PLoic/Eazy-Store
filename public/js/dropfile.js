@@ -50,13 +50,16 @@
 
                 formData.append("fic",file);
 
+                console.log(id);
 
                 $.ajax({
                     type: 'POST',
                     url: '/upload/osef/'+id,
                     data: formData,
-                     success: function(){
-                        location.reload();
+                    success: function() {
+                        $.get('/user/folder/'+id+'/', function(e){
+                            filelist.listing(e);
+                        })
                     },
                     processData:false,
                     contentType:false

@@ -3,6 +3,8 @@
  */
 $(document).ready(OnReady);
 
+var filelist = {};
+
 function OnReady(){
     $('#content').hide()
         .fadeIn('slow');
@@ -30,7 +32,7 @@ function OnReady(){
         return false;
     })
 
-    function newDir(path){
+    filelist.newDir = function(path){
 
         return $('<div />')
                     .attr('class','panel panel-default')
@@ -51,37 +53,65 @@ function OnReady(){
                         $('<div />')
                             .attr('id','dirForm')
                             .append(
-                            $('<form />')
-                                .attr('role',"form")
-                                .attr('method',"post")
-                                .attr('action','/')
-                                .attr('class','col-lg-offset-4 col-lg-4')
-                                .attr('id','dirCr')
-                                .append(
-                                $('<div />')
-                                    .attr('class','form-group')
-                                    .append(
-                                    $('<label />').attr('role','name').text('Nom du dossier:'),
-                                    $('<input />')
-                                        .attr('id','name')
-                                        .attr('name','name')
-                                        .attr('class','form-control')
-                                        .attr('type','text')
+                                    $('<form />')
+                                        .attr('role',"form")
+                                        .attr('method',"post")
+                                        .attr('action','/file/create')
+                                        .attr('class','col-lg-offset-4 col-lg-4')
+                                        .attr('id','dirCr')
+                                        .append(
+                                                $('<div />')
+                                                    .attr('class','form-group')
+                                                    .append(
+                                                    $('<label />').attr('role','name').text('Nom du dossier:'),
+                                                    $('<input />')
+                                                        .attr('id','name')
+                                                        .attr('name','name')
+                                                        .attr('class','form-control')
+                                                        .attr('type','text')
 
-                                ),
-                                $('<button />')
-                                    .attr('type','submit')
-                                    .attr('class','btn btn-default')
-                                    .text('Soumettre')
-                            )
-                        )
+                                                ),
+                                                $('<button />')
+                                                    .attr('type','submit')
+                                                    .attr('class','btn btn-default')
+                                                    .text('Soumettre')
+                                        ).submit(function(e) {
+                                            e.preventDefault();
+                                            var name = $('#name').val();
+
+                                            var path = $(location).attr('pathname')
+                                            path = path.slice(path.indexOf('/') + 1).split('/');
+                                            console.log(path);
+                                            path.shift();
+                                            path.shift();
+                                            console.log(path);
+                                            var opt = path.join('/');
+                                            //console.log(opt);
+                                            //console.log($(this));
+                                             $.ajax({
+                                                 type: $(this).attr("method"),
+                                                 url: $(this).attr("action"),
+                                                 data: {
+                                                     path: opt,
+                                                     name: name
+                                                     },
+                                                 success: function() {
+                                                     $.get('/user/folder/'+opt+'/', function(e){
+                                                         filelist.listing(e);
+                                                     })
+                                                 }
+                                             });
+                                            return false;
+                                        })
+                                )
                             .hide()
 
                     )
                 )
+
     }
 
-    function dragArea(size){
+    filelist.dragArea = function(size){
         console.log(size);
         return $('<div />')
                     .attr('id','drag')
@@ -95,8 +125,73 @@ function OnReady(){
                     .height(size).empty();
     }
 
+    filelist.arianne = function(){
+        var url = $(location).attr('pathname');
+        url = url.slice(url.indexOf('/') + 1).split('/');
+        url.shift();
+        url.shift();
 
-    function listing(data){
+
+        var a = $('<ol />')
+                    .attr('class','breadcrumb');
+        var b = $('<li />');
+
+
+
+        var home = $('<a />').attr('href','/user/files/'+ url[0]).click(function(){
+            var data = $(this).attr("href");
+            console.log(data);
+            $.ajax({
+                type: 'GET',
+                url: data,
+                data: { path: data},
+                success : function(data2){
+                    window.history.pushState('','',data);
+                    filelist.listing(data2);
+                }
+            });
+            return false;
+        }).text('HOME')
+
+        home.appendTo(b);
+        b.appendTo(a);
+
+        var id = url[0];
+        url.shift();
+
+        var iter  = 0;
+        var url2 = id.toString();
+
+        $.each(url, function (key,value) {
+            url2 = url2 +'/'+ (url[iter]).toString();
+            var tmp = $('<li />').append(
+                            $('<a />').attr('href','/user/folder/'+url2).click(function(){
+                                        var data = $(this).attr("href");
+                                        console.log(data);
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: data,
+                                            data: { path: data},
+                                            success : function(data2){
+                                                window.history.pushState('','',data);
+                                                filelist.listing(data2);
+                                            }
+                                        });
+                                        return false;
+                                    }).text(value)
+                )
+            tmp.appendTo(a);
+            iter = iter + 1;
+        })
+
+
+
+        return a;
+
+    }
+
+
+     filelist.listing = function(data){
         /**
          * Traitement de l'URL
          * @type {*|jQuery}
@@ -113,7 +208,7 @@ function OnReady(){
         $('#content').empty();
         var a = $('#content');
 
-        var f = newDir('');
+        var f = filelist.newDir('');
 
 
 
@@ -123,6 +218,10 @@ function OnReady(){
         var b =  $('<ul />')
                         .attr('id','file_li')
                         .attr('class','list-group col-lg-8');
+
+        var ariane = filelist.arianne();
+
+        ariane.appendTo(a);
 
         b.appendTo(a);
         $.when($.each(data,function(key,value) {
@@ -147,7 +246,7 @@ function OnReady(){
                                 data: { path: data},
                                 success : function(data2){
                                     window.history.pushState('','',data);
-                                    listing(data2);
+                                    filelist.listing(data2);
                                 }
                             });
                             return false;
@@ -170,7 +269,7 @@ function OnReady(){
 
             }
         })).done(function(){
-                var g = dragArea(b.height());
+                var g = filelist.dragArea(b.height());
                 g.dropfile();
                 g.appendTo(a)
         })
@@ -189,13 +288,13 @@ function OnReady(){
             url: '/user/files/'+id,
             success: function(data){
                window.history.pushState('','','/user/files/'+id);
-               listing(data);
+               filelist.listing(data);
             }
         })
         return false;
     });
 
-    $('#dirCr').submit(function(data) {
+    /*$('#dirCr').submit(function(data) {
         var name = $('#name').val();
 
         var path = $(location).attr('pathname')
@@ -219,7 +318,7 @@ function OnReady(){
             }
         });
         return false;
-    })
+    })*/
 
     $('#file').click(function() {
         var addressValue = $(this).attr("href");
@@ -241,7 +340,7 @@ function OnReady(){
     });
 
 
-    $('#return').click(function(){
+    /*$('#return').click(function(){
         var data = $(location).attr('pathname');
         var hashes = data.slice(data.indexOf('/') + 1).split('/');
 
@@ -266,7 +365,7 @@ function OnReady(){
 
 
 
-    })
+    })*/
 
     //a1.dropfile();
 

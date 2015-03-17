@@ -115,6 +115,8 @@ class UserController extends Controller
     public function file_list($path3 = ''){
         $path = $this->getParams();
 
+        //var_dump($path);
+
         if(sizeof($path) == 1){
             $test = false;
             $id = (int)$path[0];
@@ -124,6 +126,7 @@ class UserController extends Controller
             $test = true;
             $id = (int)$path[0];
             $path2 = implode('/',$path);
+            //var_dump($path2);
             $tabtmp = scandir('files/'.$path2);
         }
         $this->_fileTypes = require_once('app/config/filesTypes.php');
@@ -153,7 +156,9 @@ class UserController extends Controller
     }
 
     public function folder(){
-        $this->path = Input::post('path');
+        $this->path = Input::get('path');
+        $this->file_list($this->path);
+
     }
 
     public function folder2(){
