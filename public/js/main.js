@@ -151,7 +151,7 @@ function OnReady(){
                 }
             });
             return false;
-        }).text('HOME')
+        }).text('Home')
 
         home.appendTo(b);
         b.appendTo(a);
@@ -188,6 +188,54 @@ function OnReady(){
 
         return a;
 
+    }
+
+
+    filelist.createConfirm = function(url,value){
+        return $('<div />')
+            .attr('id','mymodal')
+            .addClass('modal fade')
+            .append(
+            $('<div />')
+                .addClass('modal-dialog')
+                .append(
+                $('<div />')
+                    .addClass('modal-content')
+                    .append(
+                    $('<div />')
+                        .addClass('modal-header')
+                        .append(
+                        $('<button />')
+                            .attr('type','button')
+                            .addClass('close')
+                            .attr('data-dismiss','modal')
+                            .attr('aria-label','Close')
+                            .append(
+                            $('<span />')
+                                .attr('aria-hidden','true')
+
+                        ),
+                        $('<h4 />').text('Confimer')
+                    ),
+                    $('<div />')
+                        .addClass('modal-body')
+                        .text('Veuiller confirmer votre choix'),
+                    $('<div />')
+                        .addClass('modal-footer')
+                        .append(
+                        $('<button />')
+                            .attr('type','button')
+                            .addClass('btn btn-default')
+                            .attr('data-dismiss','modal')
+                            .text('Quitter'),
+                        $('<button />')
+                            .attr('type','button')
+                            .addClass('btn btn-primary')
+                            .text('Confirmer')
+                    )
+                )
+            )
+        )
     }
 
 
@@ -252,10 +300,12 @@ function OnReady(){
                             return false;
                         })
                         .append(
+
                         $('<i />')
                             .attr('class', 'fa fa-arrow-right pull-right')
                     );
-                    e.appendTo(c);
+
+
                 } else {
                     var e = $('<a />')
                         .attr('href', url + '/' + key)
@@ -264,11 +314,27 @@ function OnReady(){
                         $('<i />')
                             .attr('class', 'fa fa-download pull-right')
                     );
-                    e.appendTo(c);
+
+
                 }
+
+                var close = $('<a />')
+                                    .attr('href','#')
+                                    .append(
+                                    $('<i />')
+                                        .addClass('fa fa-times pull-right')
+                                        .click(function(){
+                                            $("#mymodal").modal('show')
+                                        })
+                            )
+
+                close.appendTo(c);
+                e.appendTo(c);
 
             }
         })).done(function(){
+                var modal = filelist.createConfirm(null,null);
+                modal.appendTo(a);
                 var g = filelist.dragArea(b.height());
                 g.dropfile();
                 g.appendTo(a)
