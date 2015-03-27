@@ -43,12 +43,17 @@ function main()
     $router->add('/user/auth', new \app\controllers\UserController(), 'auth','POST');
     $router->add('/user/register', new \app\controllers\UserController(), 'save_register','POST');
     $router->add('/user/disconnect', new \app\controllers\UserController(), 'disconnect');
-    $router->add('/user/files', new \app\controllers\UserController(), 'index');
     $router->add('/', new \app\controllers\HomeController(), 'index');
-    $router->add('/upload', new \app\controllers\FileController(), 'upload','POST');
-    $router->add('/file/create', new \app\controllers\FileController(), 'create_dir','POST');
-    $router->add('/delete/file', new \app\controllers\FileController(), 'delete');
-    $router->add('/user/folder', new \app\controllers\UserController(), 'file_list');
+
+    if(Authentication::getInstance()->isAuthenticated()){
+        $router->add('/user/files', new \app\controllers\UserController(), 'index');
+        $router->add('/upload', new \app\controllers\FileController(), 'upload','POST');
+        $router->add('/file/create', new \app\controllers\FileController(), 'create_dir','POST');
+        $router->add('/delete/file', new \app\controllers\FileController(), 'deleteA');
+        $router->add('/user/folder', new \app\controllers\UserController(), 'file_list');
+    }
+
+    $router->add('/mobile', new \app\controllers\UserController(), 'mobile_index');
     //$router->add('/user/folder/', new \app\controllers\UserController(), 'folder' , 'POST');
     //$router->add('/user/folder/', new \app\controllers\UserController(), 'folder2' );
 

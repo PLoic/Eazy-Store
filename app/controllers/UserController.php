@@ -42,6 +42,10 @@ class UserController extends Controller
         $this->file_list();
     }
 
+    public function mobile_index(){
+        $this->getView()->render('mobile/layout/default');
+    }
+
     public function register()
     {
         $this->getView()->render('users/signup');
@@ -84,12 +88,17 @@ class UserController extends Controller
 
             $username = Input::post('username');
             $password = Input::post('password');
+            $mobile = Input::post('mobile');
 
+            $mobile = ($mobile === 'true');
             $this->validAuth = $this->userModel->validateAuthentication($username, $password);
 
             if (!empty($this->validAuth)) {
                 Authentication::getInstance()->setAuthenticated($username, $this->validAuth['id']);;
-                $this->getView()->render('layout/default',['id'=>Authentication::getInstance()->getUserId()-1]);
+                if($mobile)
+                    echo json_encode(Authentication::getInstance()->getUserId()-1);
+                else
+                    $this->getView()->render('layout/default',['id'=>Authentication::getInstance()->getUserId()-1]);
             } else {
                 // TODO POPUP WRONG CREDENTIALS MESSAGE
                 print_r($this->validAuth);

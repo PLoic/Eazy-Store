@@ -42,28 +42,70 @@
                 var hashes = window.location.pathname.slice(window.location.href.indexOf('/') + 1).split('/');
                 hashes.shift();
                 var id = hashes.join('/');
-                console.log(id);
 
                 var file = files[index];
 
-                var formData = new FormData();
+                if(file.size > 16777216){
+                    var a = $('#content');
+                    a.append(
+                    $('<div />')
+                        .attr('id','mymodal1')
+                        .attr('role','dialog')
+                        .attr('tabindex','-1')
+                        .attr('aria-labelledby','myLargeModalLabel')
+                        .attr('aria-hidden','true')
+                        .addClass('modal fade')
+                        .append(
+                        $('<div />')
+                            .addClass('modal-dialog modal-lg')
+                            .append(
+                            $('<div />')
+                                .addClass('modal-content')
+                                .append(
+                                    $('<div />')
+                                        .addClass('modal-header')
+                                        .append(
+                                        $('<button />')
+                                            .attr('type','button')
+                                            .addClass('close')
+                                            .attr('data-dismiss','modal')
+                                            .attr('aria-label','Close')
+                                            .append(
+                                            $('<span />')
+                                                .attr('aria-hidden','true')
 
-                formData.append("fic",file);
+                                        ),
+                                        $('<h4 />').text('Information')
+                                    ),
+                                    $('<div />')
+                                        .addClass('modal-body')
+                                        .text('Taille de fichier trop importante')
+                                    )
+                            )
+                        ).modal('show')
+                    )
 
-                console.log(id);
+                }else{
+                    var formData = new FormData();
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/upload/osef/'+id,
-                    data: formData,
-                    success: function() {
-                        $.get('/user/folder/'+id+'/', function(e){
-                            filelist.listing(e);
-                        })
-                    },
-                    processData:false,
-                    contentType:false
-                });
+                    formData.append("fic",file);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/upload/osef/'+id,
+                        data: formData,
+                        success: function() {
+                            $.get('/user/folder/'+id+'/', function(e){
+                                filelist.listing(e);
+                            })
+                        },
+                        processData:false,
+                        contentType:false
+                    });
+                }
+
+                return false;
+
             }
 
         })

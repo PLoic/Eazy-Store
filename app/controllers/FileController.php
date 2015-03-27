@@ -29,7 +29,6 @@ class FileController extends Controller {
         $path = implode('/',$this->getParams());
         move_uploaded_file($fic['tmp_name'],'files/'.$path.'/'.$fic['name']);
 
-        //print_r($path);
     }
 
     public function create_dir(){
@@ -39,7 +38,32 @@ class FileController extends Controller {
         mkdir('files/'.Input::post('path').'/'.Input::post('name'));
     }
 
-    public function delete(){
+    public function deleteA(){
+        $path = $this->getParams();
+        $path = implode('/',$path);
+        var_dump($this->Delete2('files/'.$path));
 
+    }
+
+    function Delete2($path)
+    {
+        if (is_dir($path) === true)
+        {
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file)
+            {
+                $this->Delete2(realpath($path) . '/' . $file);
+            }
+
+            return rmdir($path);
+        }
+
+        else if (is_file($path) === true)
+        {
+            return unlink($path);
+        }
+
+        return false;
     }
 }

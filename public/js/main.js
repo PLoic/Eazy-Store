@@ -6,6 +6,18 @@ $(document).ready(OnReady);
 var filelist = {};
 
 function OnReady(){
+
+    function disablerefresh(e) {
+        if (((e.which || e.keyCode) == 116) || (e.keyCode == 82 && e.ctrlKey) || (e.keyCode == 82 && e.metaKey) ){
+            e.preventDefault();
+        }
+
+    };
+
+    $(document).on("keydown", disablerefresh);
+
+
+
     $('#content').hide()
         .fadeIn('slow');
 
@@ -14,13 +26,25 @@ function OnReady(){
         window.location.replace('/');
     })
 
-    //var tmp = $('#file_li').height();
-    //$('#drag').height(tmp).empty();
 
 
     $('#signup').submit(function(data) {
         var donnees = $(this).serialize();
 
+        $.ajax({
+            type: $(this).attr("method"),
+            url: $(this).attr("action"),
+            success: function(data) {
+                window.location.replace('/');
+            },
+            data: donnees
+        });
+        return false;
+    })
+
+    $('#signin').submit(function(data) {
+        var donnees = $(this).serialize();
+        donnees = donnees + '&mobile=false';
         $.ajax({
             type: $(this).attr("method"),
             url: $(this).attr("action"),
@@ -73,8 +97,18 @@ function OnReady(){
                                                 ),
                                                 $('<button />')
                                                     .attr('type','submit')
+                                                    .attr('id','creat')
                                                     .attr('class','btn btn-default')
-                                                    .text('Soumettre')
+                                                    .text('Soumettre'),
+                                                $('<div />')
+                                                    .attr('id','infos_dir')
+                                                    .addClass('panel panel-warning')
+                                                    .append(
+                                                    $('<div />')
+                                                        .addClass('panel-body')
+                                                        .text('Les noms de fichier ne doivent comporter des /')
+
+                                                ).hide()
                                         ).submit(function(e) {
                                             e.preventDefault();
                                             var name = $('#name').val();
@@ -86,8 +120,6 @@ function OnReady(){
                                             path.shift();
                                             console.log(path);
                                             var opt = path.join('/');
-                                            //console.log(opt);
-                                            //console.log($(this));
                                              $.ajax({
                                                  type: $(this).attr("method"),
                                                  url: $(this).attr("action"),
@@ -111,6 +143,19 @@ function OnReady(){
 
     }
 
+    $(document).on("keydown",'#name',function(e){
+        console.log(e.keyCode);
+        if(e.keyCode == 58){
+            $('body #creat').fadeOut('fast');
+            $('body #infos_dir').fadeIn('fast');
+        }
+        else if(e.keyCode != 58 && $(this).val().indexOf('/') == -1){
+            if($('body #creat').css('display') == "none"){
+                $('body #creat').fadeIn('fast');
+                $('body #infos_dir').fadeOut('fast');
+            }
+        }
+    })
     filelist.dragArea = function(size){
         console.log(size);
         return $('<div />')
@@ -191,7 +236,9 @@ function OnReady(){
     }
 
 
-    filelist.createConfirm = function(url,value){
+    filelist.createConfirm = function(){
+        var url = $(location).attr('pathname');
+
         return $('<div />')
             .attr('id','mymodal')
             .addClass('modal fade')
@@ -232,6 +279,30 @@ function OnReady(){
                             .attr('type','button')
                             .addClass('btn btn-primary')
                             .text('Confirmer')
+                            .click(function(){
+                                var url = $(location).attr('pathname');
+                                url = url.slice(url.indexOf('/') + 1).split('/');
+                                url.shift();
+                                url.shift();
+                                url = url.join('/');
+
+                                var urlC = $(location).attr('pathname');
+
+                                var test = $(location).attr('hash');
+                                test = test.slice(1);
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '/delete/file/'+url+'/'+test,
+                                   success: function(data) {
+                                       //console.log(data);
+                                        $.get('/user/folder/'+url+'/', function(e){
+                                            window.history.pushState('','',urlC);
+                                            filelist.listing(e);
+                                        })
+                                    }
+                                })
+                                return false;
+                            })
                     )
                 )
             )
@@ -284,7 +355,7 @@ function OnReady(){
                 if (value.toString().indexOf('folder') != -1) {
                     var e = $('<a />')
                         .attr('href', '/user/folder/' + url +'/'+key)
-                        .attr('id', 'folder')
+                        .attr('id', '#'+key)
                         .click(function(){
                             var data = $(this).attr("href");
                             console.log(data);
@@ -319,7 +390,7 @@ function OnReady(){
                 }
 
                 var close = $('<a />')
-                                    .attr('href','#')
+                                    .attr('href','#'+key)
                                     .append(
                                     $('<i />')
                                         .addClass('fa fa-times pull-right')
@@ -333,7 +404,7 @@ function OnReady(){
 
             }
         })).done(function(){
-                var modal = filelist.createConfirm(null,null);
+                var modal = filelist.createConfirm();
                 modal.appendTo(a);
                 var g = filelist.dragArea(b.height());
                 g.dropfile();
@@ -360,32 +431,6 @@ function OnReady(){
         return false;
     });
 
-    /*$('#dirCr').submit(function(data) {
-        var name = $('#name').val();
-
-        var path = $(location).attr('pathname')
-        path = path.slice(path.indexOf('/') + 1).split('/');
-        console.log(path);
-        path.shift();
-        path.shift();
-        console.log(path);
-        var opt = path.join('/');
-        console.log(opt);
-
-        $.ajax({
-            type: $(this).attr("method"),
-            url: $(this).attr("action"),
-            data: {
-                path: opt,
-                name: name
-            },
-            success: function() {
-                location.reload();
-            }
-        });
-        return false;
-    })*/
-
     $('#file').click(function() {
         var addressValue = $(this).attr("href");
         var hashes = addressValue.slice(addressValue.indexOf('/') + 1).split('/');
@@ -406,34 +451,24 @@ function OnReady(){
     });
 
 
-    /*$('#return').click(function(){
-        var data = $(location).attr('pathname');
-        var hashes = data.slice(data.indexOf('/') + 1).split('/');
+    $('body').append(
+        $('<div />')
+            .attr('id','footer')
+            .append(
+            $('<div />')
 
-       var options = hashes.slice(3,hashes.length);
+                .css('text-align','center')
 
-        if(options.length == 1){
-            hashes[1] = 'files'
-            delete hashes[hashes.length-1];
-            var url = hashes.join('/');
-            url = '/'+url;
-            console.log(url);
-            $.ajax({
-                type: 'GET',
-                url: url,
-                success : function(data){
-                    window.location.replace(url);
-                }
-            });
-            return false;
-        }else{
-        }
+                .text('Propulsé par ')
+                .append(
+                $('<a />')
+                    .attr('href','#')
+                    .text('SFramework')
+            )
+        )
 
+    )
 
-
-    })*/
-
-    //a1.dropfile();
 
 
 }
