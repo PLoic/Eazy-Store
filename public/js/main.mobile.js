@@ -25,7 +25,7 @@ $(document).ready(function(){
         })
     })
 
-    $('#m_files').click(function(){
+    $('body #m_files').click(function(){
 
         var url = $(location).attr('pathname');
         url = url.slice(url.indexOf('/') + 1).split('/');
@@ -37,9 +37,9 @@ $(document).ready(function(){
             type: 'GET',
             url: '/user/files/'+id,
             success: function(data){
-                window.history.pushState('','','/mobile/files/'+id);
+                $.mobile.navigate('#my_files');
+                window.history.replaceState({},'','/mobile/files/'+id+"#my_files");
                 filelistm.listing(data);
-                $.mobile.changePage('#my_files');
             }
         })
         return false;
@@ -55,47 +55,37 @@ $(document).ready(function(){
 
 
         var content = $('body #list_files');
-        var b = $('<div />').addClass('ui-field-contain');
+        content.empty();
 
+
+        var b = $('<div />').addClass('ui-field-contain');
         b.appendTo(content);
 
         $.each(data,function(key,value) {
             if(!(key.toString().indexOf('.') == 0)){
-                var c = $('<select />')
-                    .attr('name','select-custom-21')
-                    .attr('id','select-custom-21')
-                    .attr('data-native-menu','false');
+                var c = $('<select />').attr({'name':'select-custom-'+key
+                    ,'id':'select-custom-'+key,'data-native-menu':'false'});
 
                 c.appendTo(b);
 
                 var d = $('<option />')
-                    .attr('value',key)
-                    .attr('data-placeholder','true')
-                    .text(key);
-                d.appendTo(c);
-                if (value.toString().indexOf('folder') != -1) {
-                    var e = $('<a />')
-                        .attr('href', '/user/folder/' + url +'/'+key)
-                        .attr('id', '#'+key)
-                        .click(function(){
-                            var data = $(this).attr("href");
-                            console.log(data);
-                            $.ajax({
-                                type: 'GET',
-                                url: data,
-                                data: { path: data},
-                                success : function(data2){
-                                    window.history.pushState('','',data);
-                                    filelist.listing(data2);
-                                }
-                            });
-                            return false;
-                        }).append(
+                    .html(key);
 
-                        $('<option />')
-                            .attr('class', 'fa fa-arrow-right pull-right')
-                    );
+                d.appendTo(c);
+
+                if (value.toString().indexOf('folder') != -1) {
+                    console.log('lol');
+                    var e = $('<option />')
+                            .append(
+                            $('<a />')
+                                .addClass('ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-carat-r ui-btn-icon-right')
+                                .attr('href','#')
+                        )
+                            .html('Naviguer dans ce dossier')
+                    e.appendTo(c);
                 }
+                c.selectmenu();
+
             }
 
         })
