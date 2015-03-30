@@ -64,7 +64,7 @@ $(document).ready(function(){
         $.each(data,function(key,value) {
             if(!(key.toString().indexOf('.') == 0)){
                 var c = $('<select />').attr({'name':'select-custom-'+key
-                    ,'id':'select-custom-'+key,'data-native-menu':'false'});
+                    ,'id':key,'data-native-menu':'false'});
 
                 c.appendTo(b);
 
@@ -83,7 +83,50 @@ $(document).ready(function(){
                         )
                             .html('Naviguer dans ce dossier')
                     e.appendTo(c);
+                }else{
+                    var e = $('<option />')
+                        .append(
+                        $('<a />')
+                            .addClass('ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-carat-r ui-btn-icon-right')
+                            .attr('href', url + '/' + key)
+                            .attr('download',key)
+                    )
+                        .html('Telecharger')
+                    e.appendTo(c);
+
                 }
+
+                var f = $('<option />')
+                    .append(
+                    $('<a />')
+                        .addClass('ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-carat-r ui-btn-icon-right')
+                        .click(function(){
+                            /*var url = $(location).attr('pathname');
+                            url = url.slice(url.indexOf('/') + 1).split('/');
+                            url.shift();
+                            url.shift();
+                            url = url.join('/');
+
+                            var urlC = $(location).attr('pathname');
+                               */
+
+                            console.log('FUN');
+                            /*$.ajax({
+                             type: 'GET',
+                             url: '/delete/file/'+url+'/'+test,
+                             success: function(data) {
+                             $.get('/user/folder/'+url+'/', function(e){
+                             window.history.pushState('','',urlC);
+                             filelist.listing(e);
+                             })
+                             }
+                             })*/
+                            return false;
+                        })
+                    )
+                    .html('Supprimer')
+
+                f.appendTo(c);
                 c.selectmenu();
 
             }
