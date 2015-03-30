@@ -38,7 +38,7 @@ $(document).ready(function(){
             url: '/user/files/'+id,
             success: function(data){
                 $.mobile.navigate('#my_files');
-                window.history.replaceState({},'','/mobile/files/'+id+"#my_files");
+                window.history.replaceState({},'','/mobile/user/files/'+id+"#my_files");
                 filelistm.listing(data);
             }
         })
@@ -51,18 +51,20 @@ $(document).ready(function(){
         url = url.slice(url.indexOf('/') + 1).split('/');
         url.shift();
         url.shift();
+        url.shift();
         url = url.join('/');
 
         console.log(url);
 
         var content = $('body #list_files');
-        content.empty();
 
+        content.empty();
 
         var b = $('<div />')
             .attr('data-role','collapsibleset')
             .attr('data-theme','a')
-            .attr('data-inset','false');
+            .attr('data-inset','false')
+            .attr('id','lolap');
         b.appendTo(content);
 
         $.each(data,function(key,value) {
@@ -76,7 +78,7 @@ $(document).ready(function(){
 
                 d.appendTo(c);
 
-                var liste = $('<ul />').attr({'data-theme':'a'})
+                var liste = $('<ul />').attr({'data-theme':'a','data-role':'listview','id':'mylist'})
                 liste.appendTo(c);
 
                 if (value.toString().indexOf('folder') != -1) {
@@ -84,10 +86,23 @@ $(document).ready(function(){
                     var e = $('<li />')
                             .append(
                             $('<a />')
-                                .attr('href','#')
+                                .attr('href', '/user/folder/' + url +'/'+key)
+                                .attr('id', '#'+key)
                                 .html('Naviguer dans ce dossier')
                                 .click(function(){
-                                    console.log('test');
+                                    var data = $(this).attr("href");
+                                    console.log(data);
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: data,
+                                        data: { path: data},
+                                        success : function(data2){
+                                            $.mobile.navigate('#my_files');
+                                            window.history.replaceState({},'','/mobile'+ data +"#my_files");
+                                            filelistm.listing(data2);
+                                        }
+                                    });
+                                    return false;
                                 })
                             )
                     e.appendTo(liste);
@@ -95,20 +110,32 @@ $(document).ready(function(){
                     var e = $('<li />')
                         .append(
                         $('<a />')
-                            .attr('href', '/files/' + url + '/' + key)
-                            .attr('download', key)
+                            .attr('href', '/download/files/' + url + '/' + key)
+                            .attr('data-ajax', 'false')
                             .html('Telecharger')
                         )
                     e.appendTo(liste);
 
                 }
-                liste.listview();
 
+                $('body #mylist').listview();
+                b.collapsibleset()
             }
 
         })
 
+        $('#file-input').hide();
 
+        $(document).on('click', '#upload', function() {
+            $('#file-input').click();
+        });
+
+        $(document).on('change', '#file-input', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var files = e.target.files;
+            upload(files,$(this),0);
+        });
 
 
     }
