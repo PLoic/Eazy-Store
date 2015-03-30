@@ -379,7 +379,7 @@ function OnReady(){
 
                 } else {
                     var e = $('<a />')
-                        .attr('href', url + '/' + key)
+                        .attr('href', '/download/files/' + url + '/' + key)
                         .attr('download', key)
                         .append(
                         $('<i />')

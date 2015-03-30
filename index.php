@@ -51,6 +51,7 @@ function main()
         $router->add('/file/create', new \app\controllers\FileController(), 'create_dir','POST');
         $router->add('/delete/file', new \app\controllers\FileController(), 'deleteA');
         $router->add('/user/folder', new \app\controllers\UserController(), 'file_list');
+        $router->add('/download/files/', new \app\controllers\FileController(), 'down');
     }
 
     $router->add('/mobile', new \app\controllers\UserController(), 'mobile_index');

@@ -46,6 +46,8 @@ return array(
     'sql'   => 'fa-hdd-o',
 
     // Documents
+    'torrent'  => 'fa-file-text',
+    'ppt'  => 'fa-file-powerpoint-o',
     'csv'   => 'fa-file-text',
     'doc'   => 'fa-file-text',
     'docx'  => 'fa-file-text',
@@ -62,6 +64,7 @@ return array(
     'jar'   => 'fa-list-alt',
     'msi'   => 'fa-list-alt',
     'vb'    => 'fa-list-alt',
+    'dmg'    => 'fa-list-alt',
 
     // Fonts
     'eot'   => 'fa-font',

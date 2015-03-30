@@ -66,4 +66,23 @@ class FileController extends Controller {
 
         return false;
     }
+
+    public function down(){
+        $file = $this->getParams()[sizeof($this->getParams()) - 1];
+        $path = implode('/',$this->getParams());
+        $path = $_SERVER["DOCUMENT_ROOT"] .'/files/'.$path;
+
+        $file = str_replace(' ','_',$file);
+
+        if (file_exists($path)) {
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='.$file);
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($path));
+            readfile($path);
+            exit;
+        }
+    }
 }
