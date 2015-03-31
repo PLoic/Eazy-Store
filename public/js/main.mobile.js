@@ -17,7 +17,7 @@ $(document).ready(function(){
         return false;
     })
 
-    filelistm ={}
+    var filelistm ={}
 
     $('#disconnect').click(function(){
         $.get("/user/disconnect",function(){
@@ -118,6 +118,29 @@ $(document).ready(function(){
 
                 }
 
+                var del = $('<li />')
+                    .append(
+                       $('<a />')
+                           .attr({'data-ajax':'false'})
+                           .click(function(){
+                               var urlC = $(location).attr('pathname');
+                               $.ajax({
+                                   type: 'GET',
+                                   url: '/delete/file/'+url+'/'+key,
+                                   success: function(data) {
+                                       $.get('/user/folder/'+url+'/', function(e){
+                                           window.history.pushState('','',urlC+'#my_files');
+                                           filelistm.listing(e);
+                                       })
+                                   }
+                               });
+                               return false;
+                           })
+                           .html('Supprimer')
+                    );
+
+                del.appendTo(liste);
+
                 $('body #mylist').listview();
                 b.collapsibleset()
             }
@@ -134,8 +157,19 @@ $(document).ready(function(){
             e.preventDefault();
             e.stopPropagation();
             var files = e.target.files;
-            upload(files,$(this),0);
+
+            upload(files,0);
         });
+
+        function upload(files,index){
+            var hashes = window.location.pathname.slice(window.location.href.indexOf('/') + 1).split('/');
+            hashes.shift();
+            var id = hashes.join('/');
+
+            var file = files[index];
+            console.log(file);
+
+        }
 
 
     }

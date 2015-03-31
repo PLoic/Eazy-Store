@@ -157,8 +157,9 @@
     </div><!-- /header -->
 
     <div role="main" class="ui-content" id="contents">
-        <input name="file" type="file" id="file-input" data-ajax="false"/>
+        <a href="#form_doss" data-rel="popup" data-position-to="window" class="ui-btn ui-icon-gear ui-btn-icon-left" data-transition="pop">Nouveau dossier</a>
         <a href="#" class="ui-btn ui-icon-arrow-u ui-btn-icon-left" id="upload">Uploader un fichier</a>
+        <input name="file" type="file" id="file-input" data-ajax="false"/>
         <div id="list_files"></div>
     </div><!-- /content -->
 
@@ -172,10 +173,27 @@
         <a href="#" data-rel="close" class="ui-btn ui-corner-all ui-shadow ui-mini ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-right">Close</a>
     </div><!-- /panel -->
 
+    <div data-role="popup" id="form_doss" data-theme="a" class="ui-corner-all">
+        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+        <form>
+            <div style="padding:10px 20px;">
+                <h3>Nouveau dossier</h3>
+                <label for="name_d" class="ui-hidden-accessible">Nom du dossier:</label>
+                <input name="name_d" id="name_d" value="" placeholder="Nom du dossier" data-theme="a" type="text">
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Envoyer</button>
+            </div>
+        </form>
+    </div>
+    <!-- popup -->
+
+
     <div data-role="footer">
         <h4>Page Footer</h4>
     </div><!-- /footer -->
 </div><!-- /page -->
+
+
+
 
 </body>
 
