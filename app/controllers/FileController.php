@@ -34,7 +34,6 @@ class FileController extends Controller {
     public function create_dir(){
         var_dump(Input::post('path'));
         var_dump(Input::post('name'));
-        //htmlentities(Input::post('name'));
         mkdir('files/'.Input::post('path').'/'.Input::post('name'));
     }
 

@@ -2,6 +2,7 @@
  * Created by loic on 21/03/15.
  */
 $(document).ready(function(){
+
     $('#connect').submit(function(data) {
         var donnees = $(this).serialize();
         donnees = donnees + '&mobile=true';
@@ -161,14 +162,148 @@ $(document).ready(function(){
             upload(files,0);
         });
 
+        var tmp;
+
+        $('#new_f').click(function(){
+            var path = $(location).attr('pathname')
+            path = path.slice(path.indexOf('/') + 1).split('/');
+            path.shift();
+            path.shift();
+            path.shift();
+            tmp = path.join('/');
+            console.log(tmp);
+        })
+
+        $('#send_folder').click(function(){
+            var name = $('#name_d').val();
+            $.ajax({
+                type: 'POST',
+                url: '/file/create',
+                data: {
+                    path: tmp,
+                    name: name
+                },
+                success: function() {
+                    $('#name_d').val("");
+                    $('#form_doss').popup( "close" );
+                    $.get('/user/folder/'+tmp+'/', function(e){
+                        window.history.replaceState({},'','/mobile/user/files/'+tmp+"#my_files");
+                        filelistm.listing(e);
+                    })
+                }
+            });
+            return false;
+        });
+
         function upload(files,index){
             var hashes = window.location.pathname.slice(window.location.href.indexOf('/') + 1).split('/');
             hashes.shift();
+            hashes.shift();
+            hashes.shift();
+
+            var url = window.location.pathname;
             var id = hashes.join('/');
 
             var file = files[index];
-            console.log(file);
+            var formData = new FormData();
 
+            formData.append("fic",file);
+
+            $.ajax({
+                type: 'POST',
+                url: '/upload/osef/'+id,
+                data: formData,
+                success: function() {
+                    $.get('/user/folder/'+id+'/', function(e){
+                        window.history.replaceState({},'',url+"#my_files");
+                        filelistm.listing(e);
+                    })
+                },
+                processData:false,
+                contentType:false
+            });
+            return false;
+
+        }
+
+        $(function (){
+
+            var url = window.location.pathname.slice(window.location.href.indexOf('/') + 1).split('/');
+            url.shift();
+            url.shift();
+            url.shift();
+
+            var bread = $('#breadcrumbs');
+            bread.empty();
+            bread.append(
+                $('<li />').append(
+                    $('<strong />').text('Vous etes dans :')
+                )
+            );
+            var li = $('<li/>')
+
+            var home = $('<a />').attr('href','/user/files/'+ url[0]).click(function(){
+                var data = $(this).attr("href");
+                console.log('funnr ====' + data);
+                $.ajax({
+                    type: 'GET',
+                    url: data,
+                    data: { path: data},
+                    success : function(data2){
+                        window.history.replaceState({},'','/mobile'+data+"#my_files");
+                        filelistm.listing(data2);
+                    }
+                });
+                return false;
+            }).text('Home')
+
+            home.appendTo(li);
+            li.appendTo(bread);
+
+            var id = url[0];
+            console.log('iiiiiiiiiddddd = ' + id);
+            url.shift();
+
+            var iter  = 0;
+            var url2 = id.toString();
+
+            $.each(url, function (value) {
+                url2 = url2 +'/'+ (url[iter]).toString();
+                var tmp = $('<li />').append(
+                    $('<a />').attr('href','/user/folder/'+url2).click(function(){
+                        var data = $(this).attr("href");
+                        var tmp = url2.split('/');
+                        $.ajax({
+                            type: 'GET',
+                            url: data,
+                            data: { path: data},
+                            success : function(data2){
+                                window.history.replaceState({},'','/mobile/user/folder/'+(tmp.splice(0,(tmp.length)-1)).join('/')+"#my_files");
+                                filelistm.listing(data2);
+                            }
+                        });
+                        return false;
+                    }).text((url[iter]).toString())
+                )
+                tmp.appendTo(bread);
+                iter = iter + 1;
+            })
+
+
+        });
+
+        function test(){
+            var browser = navigator.userAgent,
+                browserVer = navigator.appVersion,
+                items = $('li', '#breadcrumbs').eq(0).nextUntil('li.last');
+            if (/msie/g.test(browser.toLowerCase()) && parseInt(browserVer) < 8) {
+                items.each(function () {
+                    var $item = $(this);
+                    var sep = $('<span class="separator"/>');
+                    sep.html('&gt;').insertAfter($item);
+                });
+
+            }
         }
 
 

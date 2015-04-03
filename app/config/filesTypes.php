@@ -52,6 +52,7 @@ return array(
     'doc'   => 'fa-file-text',
     'docx'  => 'fa-file-text',
     'odt'   => 'fa-file-text',
+    'cxx'   => 'fa-file-text',
     'pdf'   => 'fa-file-pdf-o',
     'xls'   => 'fa-file-excel-o',
     'xlsx'  => 'fa-file-excel-o',
@@ -86,7 +87,7 @@ return array(
     'png'   => 'fa-picture-o',
     'psd'   => 'fa-picture-o',
     'tga'   => 'fa-picture-o',
-    'tif'   => 'fa-picture-o',
+    'tiff'   => 'fa-picture-o',
 
     // Package Files
     'box'   => 'fa-archive',

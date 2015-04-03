@@ -10,6 +10,32 @@
     {{ helpers.assets.js('jquery.mobile-1.4.5') }}
 
     <style>
+
+        ul#breadcrumbs {
+            margin: 0;
+            padding: 0 0 0.2em 0;
+            list-style: none;
+            border-bottom: 1px solid #000;
+        }
+        #breadcrumbs li {
+            margin: 0;
+            padding: 0 0.5em 0 0;
+            height: 0;
+            display: inline;
+        }
+        #breadcrumbs li:after {
+            content:'\3E';
+            margin-left: 0.3em;
+        }
+
+        #breadcrumbs span.separator {
+            margin-left: 0.3em;
+        }
+
+        #breadcrumbs li.last:after, li:first-child:after {
+            content: none;
+        }
+
         /* Swipe works with mouse as well but often causes text selection. */
         /* We'll deny text selecton on everything but INPUTs and TEXTAREAs. */
         #demo-page :not(INPUT):not(TEXTAREA) {
@@ -157,7 +183,9 @@
     </div><!-- /header -->
 
     <div role="main" class="ui-content" id="contents">
-        <a href="#form_doss" data-rel="popup" data-position-to="window" class="ui-btn ui-icon-gear ui-btn-icon-left" data-transition="pop">Nouveau dossier</a>
+        <ul id="breadcrumbs">
+        </ul>
+        <a href="#form_doss" data-rel="popup" id="new_f" data-position-to="window" class="ui-btn ui-icon-gear ui-btn-icon-left" data-transition="pop">Nouveau dossier</a>
         <a href="#" class="ui-btn ui-icon-arrow-u ui-btn-icon-left" id="upload">Uploader un fichier</a>
         <input name="file" type="file" id="file-input" data-ajax="false"/>
         <div id="list_files"></div>
@@ -173,14 +201,14 @@
         <a href="#" data-rel="close" class="ui-btn ui-corner-all ui-shadow ui-mini ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-right">Close</a>
     </div><!-- /panel -->
 
-    <div data-role="popup" id="form_doss" data-theme="a" class="ui-corner-all">
+    <div data-role="popup" id="form_doss" data-history="false" data-theme="a" class="ui-corner-all">
         <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-        <form>
+        <form id="form_folder" data-ajax="false" data-history="false">
             <div style="padding:10px 20px;">
                 <h3>Nouveau dossier</h3>
                 <label for="name_d" class="ui-hidden-accessible">Nom du dossier:</label>
                 <input name="name_d" id="name_d" value="" placeholder="Nom du dossier" data-theme="a" type="text">
-                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Envoyer</button>
+                <button type="button" data-theme="b" data-icon="check" data-inline="true" id="send_folder">Envoyer</button>
             </div>
         </form>
     </div>
